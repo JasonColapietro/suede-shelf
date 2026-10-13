@@ -1,0 +1,27 @@
+instructions:
+  - name: Payment invariants
+    fileFilters:
+      - "lib/cart.ts"
+      - "lib/shop.ts"
+      - "lib/paypal.ts"
+      - "lib/storefront-mcp.ts"
+      - "lib/ai.ts"
+    instructions: |
+      1. Flag any MCP tool input that accepts a price, amount, total or discount. Prices must come from the catalog via priceCart.
+      2. Flag any path that captures a PayPal order whose status is not APPROVED.
+      3. Flag removal or weakening of PayPal-Request-Id idempotency keys.
+      4. Flag money arithmetic done in floating point instead of integer cents.
+  - name: Untrusted merchant input
+    fileFilters:
+      - "lib/catalog.ts"
+      - "lib/safe-fetch.ts"
+      - "lib/create-store.ts"
+    instructions: |
+      1. Flag any fetch of a merchant URL that bypasses safeFetch.
+      2. Flag page text sent to a model outside a data wrapper or with instructions to follow it.
+  - name: Tests
+    fileFilters:
+      - "lib/**/*.ts"
+      - "!test/**"
+    instructions: |
+      1. A behavior change in lib/ without a matching change in test/ needs a reason in the MR description.

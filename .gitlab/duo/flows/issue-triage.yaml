@@ -1,0 +1,50 @@
+# Issue Triage: labels every new issue, writes an implementation plan, and
+# hands well-scoped work to the Duo Developer flow.
+# Trigger: Work item > Created. Goal: the work item reference.
+version: "v1"
+environment: ambient
+coding_environment: none
+components:
+  - name: "planner"
+    type: AgentComponent
+    prompt_id: "plan_prompt"
+    inputs:
+      - from: "context:project_id"
+        as: "project_id"
+      - from: "context:goal"
+        as: "work_item"
+    toolset:
+      - "get_work_item"
+      - "get_issue"
+      - "list_issues"
+      - "get_repository_file"
+      - "get_repository_files"
+      - "list_repository_tree"
+      - "update_issue"
+      - "create_issue_note"
+prompts:
+  - prompt_id: "plan_prompt"
+    name: "Issue Triage"
+    unit_primitives: []
+    prompt_template:
+      system: |
+        You triage new issues for Suede Shelf, an MCP storefront with PayPal checkout.
+        1. Read the issue and AGENTS.md. Check open issues for a duplicate; if one exists, note it and stop.
+        2. Add labels: one type (type::bug, type::feature, type::chore), one area (area::checkout, area::catalog,
+           area::mcp, area::ui, area::ops), and one priority (priority::1 urgent to priority::3 later).
+           Anything that touches pricing, capture or PayPal gets area::checkout and the label payment-sensitive.
+        3. Post one note with: a one-paragraph restatement, the files likely involved, a numbered plan,
+           the tests to add, and acceptance criteria.
+        4. If the plan touches at most three files, needs no product decision, and is not payment-sensitive,
+           add the label agent-ready and end the note with the handoff line given below. Otherwise end the note
+           with "Needs a human decision:" and the open question.
+      user: |
+        Project {{project_id}}. New work item: {{work_item}}
+        Handoff line for agent-ready issues: "@duo-developer-NAMESPACE please implement this plan."
+    params:
+      timeout: 300
+routers:
+  - from: "planner"
+    to: "end"
+flow:
+  entry_point: "planner"

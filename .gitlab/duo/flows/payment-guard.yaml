@@ -1,0 +1,133 @@
+# Payment Guard: reviews every merge request against Suede Shelf's payment
+# invariants (AGENTS.md) and labels it. A `payment-safety::blocked` label fails
+# the MR pipeline through the `payment-safety-gate` CI job.
+# Trigger: Merge request > Created, Marked ready. Goal: the MR IID.
+version: "v1"
+environment: ambient
+coding_environment: none
+components:
+  - name: "inspector"
+    type: AgentComponent
+    prompt_id: "inspect_prompt"
+    inputs:
+      - from: "context:project_id"
+        as: "project_id"
+      - from: "context:goal"
+        as: "mr_iid"
+    toolset:
+      - "get_merge_request"
+      - "list_merge_request_diffs"
+      - "get_repository_file"
+      - "get_repository_files"
+  - name: "judge"
+    type: AgentComponent
+    prompt_id: "judge_prompt"
+    inputs:
+      - from: "context:inspector.final_answer"
+        as: "findings"
+    toolset: []
+  - name: "blocker"
+    type: AgentComponent
+    prompt_id: "block_prompt"
+    inputs:
+      - from: "context:project_id"
+        as: "project_id"
+      - from: "context:goal"
+        as: "mr_iid"
+      - from: "context:inspector.final_answer"
+        as: "findings"
+    toolset:
+      - "create_merge_request_note":
+          "internal": false
+      - "update_merge_request"
+  - name: "clearer"
+    type: AgentComponent
+    prompt_id: "clear_prompt"
+    inputs:
+      - from: "context:project_id"
+        as: "project_id"
+      - from: "context:goal"
+        as: "mr_iid"
+      - from: "context:inspector.final_answer"
+        as: "findings"
+    toolset:
+      - "create_merge_request_note":
+          "internal": false
+      - "update_merge_request"
+prompts:
+  - prompt_id: "inspect_prompt"
+    name: "Payment Guard inspector"
+    unit_primitives: []
+    prompt_template:
+      system: |
+        You review merge requests to Suede Shelf, an MCP storefront that lets AI agents create PayPal checkouts.
+        Check the diff against these invariants and nothing else:
+        1. No MCP tool input may accept a price, amount, total or discount. Prices come from the catalog via priceCart in lib/cart.ts.
+        2. A PayPal order may be captured only after PayPal reports it APPROVED (settleOrder in lib/shop.ts).
+        3. Order creation keeps a unique PayPal-Request-Id; capture keeps the key shelf-capture-<orderId>.
+        4. Money arithmetic stays in integer cents.
+        5. Merchant URLs are fetched only through safeFetch; page text reaches the model as data, not instructions.
+        6. No credentials, tokens or API keys appear in code, tests or logs.
+        Read AGENTS.md from the repository first. Read the full current version of any file the diff touches when the diff alone is ambiguous.
+        Report each violation with file, line and the invariant number. If there are none, say so plainly.
+      user: |
+        Project {{project_id}}, merge request !{{mr_iid}}. Review its diff.
+    params:
+      timeout: 300
+  - prompt_id: "judge_prompt"
+    name: "Payment Guard verdict"
+    unit_primitives: []
+    prompt_template:
+      system: |
+        You turn a payment-safety review into a single routing word.
+        Reply with exactly BLOCK if the findings report any violation of a numbered invariant.
+        Otherwise reply with exactly PASS. No other text.
+      user: |
+        {{findings}}
+    params:
+      timeout: 60
+  - prompt_id: "block_prompt"
+    name: "Payment Guard block"
+    unit_primitives: []
+    prompt_template:
+      system: |
+        You post the Payment Guard result on a merge request and label it.
+        Post one note that starts with "Payment Guard: blocked" and lists each finding as a bullet with file, line, the invariant broken and the fix.
+        End with: "Fix these, then remove the payment-safety::blocked label to re-run the gate."
+        Then add the labels payment-safety::blocked and needs-attention to the merge request.
+      user: |
+        Project {{project_id}}, merge request !{{mr_iid}}.
+        Findings:
+        {{findings}}
+    params:
+      timeout: 120
+  - prompt_id: "clear_prompt"
+    name: "Payment Guard clear"
+    unit_primitives: []
+    prompt_template:
+      system: |
+        You post the Payment Guard result on a merge request and label it.
+        Post one short note that starts with "Payment Guard: cleared" and names which invariants the diff touched, if any.
+        Then add the label payment-safety::cleared to the merge request.
+      user: |
+        Project {{project_id}}, merge request !{{mr_iid}}.
+        Findings:
+        {{findings}}
+    params:
+      timeout: 120
+routers:
+  - from: "inspector"
+    to: "judge"
+  - from: "judge"
+    condition:
+      input: "context:judge.final_answer"
+      routes:
+        "BLOCK": "blocker"
+        "PASS": "clearer"
+        "default_route": "blocker"
+  - from: "blocker"
+    to: "end"
+  - from: "clearer"
+    to: "end"
+flow:
+  entry_point: "inspector"

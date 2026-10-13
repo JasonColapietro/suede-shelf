@@ -1,0 +1,14 @@
+# Runtime for Duo Agent Platform flows that run on CI runners.
+image: node:22-bookworm-slim
+setup_script:
+  - npm ci --cache .npm --prefer-offline --ignore-scripts
+  - npx next typegen
+cache:
+  key:
+    files: [package-lock.json]
+    prefix: npm
+  paths: [.npm]
+network_policy:
+  include_recommended_allowed: true
+  allowed_domains:
+    - registry.npmjs.org

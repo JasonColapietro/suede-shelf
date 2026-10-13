@@ -1,0 +1,139 @@
+# Pipeline Medic: when a pipeline fails, diagnose it. Code failures get a fix
+# merge request; deploy or smoke-test failures get an incident issue.
+# Trigger: Pipeline events > Failed. Goal: the pipeline webhook payload (JSON).
+version: "v1"
+environment: ambient
+coding_environment: full
+components:
+  - name: "triage"
+    type: AgentComponent
+    prompt_id: "triage_prompt"
+    inputs:
+      - from: "context:project_id"
+        as: "project_id"
+      - from: "context:goal"
+        as: "pipeline_event"
+    toolset:
+      - "get_pipeline_failing_jobs"
+      - "get_job_logs"
+      - "get_pipeline_errors"
+  - name: "classify"
+    type: AgentComponent
+    prompt_id: "classify_prompt"
+    inputs:
+      - from: "context:triage.final_answer"
+        as: "diagnosis"
+    toolset: []
+  - name: "fixer"
+    type: AgentComponent
+    prompt_id: "fix_prompt"
+    inputs:
+      - from: "context:project_id"
+        as: "project_id"
+      - from: "context:goal"
+        as: "pipeline_event"
+      - from: "context:triage.final_answer"
+        as: "diagnosis"
+    toolset:
+      - "read_file"
+      - "find_files"
+      - "grep"
+      - "edit_file"
+      - "run_tests"
+      - "create_branch"
+      - "create_commit"
+      - "create_merge_request"
+  - name: "incident"
+    type: AgentComponent
+    prompt_id: "incident_prompt"
+    inputs:
+      - from: "context:project_id"
+        as: "project_id"
+      - from: "context:goal"
+        as: "pipeline_event"
+      - from: "context:triage.final_answer"
+        as: "diagnosis"
+    toolset:
+      - "list_issues"
+      - "create_issue"
+      - "create_issue_note"
+prompts:
+  - prompt_id: "triage_prompt"
+    name: "Pipeline Medic triage"
+    unit_primitives: []
+    prompt_template:
+      system: |
+        You diagnose failed GitLab pipelines for Suede Shelf (Next.js 16, TypeScript, node:test).
+        Read the failing jobs and their logs. Identify the first real error, the job, the stage and the most likely cause.
+        Say whether the cause is in this repository's code or tests (CODE), or in deployment, cloud configuration,
+        an external service such as PayPal or Shopify, or the post-deploy smoke test against a live environment (OPS).
+        Quote the decisive log lines.
+      user: |
+        Project {{project_id}}. Pipeline event:
+        {{pipeline_event}}
+    params:
+      timeout: 300
+  - prompt_id: "classify_prompt"
+    name: "Pipeline Medic route"
+    unit_primitives: []
+    prompt_template:
+      system: |
+        Reply with exactly CODE if the diagnosis says the cause is in the repository's code or tests.
+        Reply with exactly OPS otherwise. No other text.
+      user: |
+        {{diagnosis}}
+    params:
+      timeout: 60
+  - prompt_id: "fix_prompt"
+    name: "Pipeline Medic fix"
+    unit_primitives: []
+    prompt_template:
+      system: |
+        You fix a failing Suede Shelf pipeline with the smallest correct change.
+        Follow AGENTS.md. Never weaken a payment invariant, delete a test, or skip a check to make a pipeline pass.
+        Reproduce with run_tests before and after your change. Then create a branch named medic/<short-cause>,
+        commit the fix, and open a merge request titled "Fix: <cause>" whose description states the failing job,
+        the root cause, the change, and the test evidence. If you cannot produce a fix that passes the tests,
+        open no merge request and explain why in your final answer.
+      user: |
+        Project {{project_id}}.
+        Diagnosis:
+        {{diagnosis}}
+        Pipeline event:
+        {{pipeline_event}}
+    params:
+      timeout: 900
+  - prompt_id: "incident_prompt"
+    name: "Pipeline Medic incident"
+    unit_primitives: []
+    prompt_template:
+      system: |
+        You open or update an incident for an operational pipeline failure in Suede Shelf.
+        First list open issues labeled incident. If one already covers the same job and cause, add a note to it with
+        the new pipeline link and evidence. Otherwise create an issue titled "Incident: <job> failed: <cause>" with
+        labels incident and ops, containing the environment, pipeline link, decisive log lines, suspected cause,
+        customer impact (can AI shoppers still check out?), and the next three checks a human should make.
+      user: |
+        Project {{project_id}}.
+        Diagnosis:
+        {{diagnosis}}
+        Pipeline event:
+        {{pipeline_event}}
+    params:
+      timeout: 300
+routers:
+  - from: "triage"
+    to: "classify"
+  - from: "classify"
+    condition:
+      input: "context:classify.final_answer"
+      routes:
+        "CODE": "fixer"
+        "OPS": "incident"
+        "default_route": "incident"
+  - from: "fixer"
+    to: "end"
+  - from: "incident"
+    to: "end"
+flow:
+  entry_point: "triage"

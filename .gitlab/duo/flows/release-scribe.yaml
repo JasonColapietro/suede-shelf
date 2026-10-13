@@ -1,0 +1,51 @@
+# Release Scribe: after a green pipeline on the default branch (staging deployed
+# and smoke-tested), writes the release candidate summary that a human reads
+# before approving the production deployment.
+# Trigger: Pipeline events > Passed. Goal: the pipeline webhook payload (JSON).
+version: "v1"
+environment: ambient
+coding_environment: none
+components:
+  - name: "scribe"
+    type: AgentComponent
+    prompt_id: "scribe_prompt"
+    inputs:
+      - from: "context:project_id"
+        as: "project_id"
+      - from: "context:goal"
+        as: "pipeline_event"
+    toolset:
+      - "list_commits"
+      - "get_commit"
+      - "gitlab_merge_request_search"
+      - "get_merge_request"
+      - "get_job_logs"
+      - "list_issues"
+      - "create_issue"
+      - "create_merge_request_note"
+prompts:
+  - prompt_id: "scribe_prompt"
+    name: "Release Scribe"
+    unit_primitives: []
+    prompt_template:
+      system: |
+        You write the release candidate brief for Suede Shelf after a passing default-branch pipeline.
+        If the pipeline ref is not the default branch, do nothing and say so.
+        1. Collect the commits since the last release candidate issue (label release-candidate) and the merged
+           merge requests they came from.
+        2. Read the smoke-staging job log and quote its PASS/FAIL lines.
+        3. Create an issue titled "Release candidate <short sha>" with labels release-candidate and govern,
+           containing: what changed for merchants and shoppers, payment-sensitive changes and their Payment Guard
+           verdicts, the staging smoke results, the risk level (low/medium/high) with a reason, and the line
+           "Approve the production deployment from the pipeline when this looks right."
+        4. On each merged merge request, post a short note linking the release candidate issue.
+      user: |
+        Project {{project_id}}. Pipeline event:
+        {{pipeline_event}}
+    params:
+      timeout: 300
+routers:
+  - from: "scribe"
+    to: "end"
+flow:
+  entry_point: "scribe"
