@@ -27,8 +27,8 @@ Suede Shelf ships through GitLab with Duo Agent Platform flows doing the work be
 4. **Settings › Merge requests**: turn on automatic reviews by GitLab Duo, and "Pipelines must succeed".
 5. **Settings › CI/CD › Protected environments**: protect `production`, require one approval, allow the pipeline triggerer to approve.
 6. **Settings › CI/CD › Variables** (none of these are secrets):
-   `GCP_PROJECT_ID`, `GCP_PROJECT_NUMBER`, `GCP_WIF_POOL`, `GCP_WIF_PROVIDER`, `GCP_DEPLOYER_SA`, `STAGING_URL`, `PRODUCTION_URL`, `DEMO_STORE_ID`.
+   `GCP_PROJECT_ID`, `GCP_PROJECT_NUMBER`, `GCP_WIF_POOL`, `GCP_WIF_PROVIDER`, `GCP_DEPLOYER_SA`, `GCP_RUNTIME_SA`, `STAGING_URL`, `PRODUCTION_URL`, `DEMO_STORE_ID`.
 7. Replace `NAMESPACE` in `issue-triage.yaml` with the group's Duo Developer handle.
 
 ### Google Cloud
-Artifact Registry repository `shelf`, a deployer service account with `roles/run.admin`, `roles/iam.serviceAccountUser` and `roles/artifactregistry.writer`, a Workload Identity pool and OIDC provider trusting `https://gitlab.com` restricted to this project, and Secret Manager secrets `paypal-client-id`, `paypal-client-secret`, `anthropic-api-key`, `kv-rest-api-url`, `kv-rest-api-token`.
+Artifact Registry repository `shelf`, a runtime service account with `roles/secretmanager.secretAccessor` on the app's secrets, a deployer service account with `roles/run.admin`, `roles/iam.serviceAccountUser` and `roles/artifactregistry.writer`, a Workload Identity pool and OIDC provider trusting `https://gitlab.com` restricted to this project, and Secret Manager secrets `paypal-client-id`, `paypal-client-secret`, `anthropic-api-key`, `kv-rest-api-url`, `kv-rest-api-token`.

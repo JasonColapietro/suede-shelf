@@ -124,7 +124,7 @@ container_scanning:
     # configure: runtime settings and secrets come from Secret Manager, never from the repo.
     - >
       gcloud run deploy "$SERVICE" --image "$AR_IMAGE" --region "$GCP_REGION"
-      --allow-unauthenticated --port 8080 --memory 512Mi --max-instances 3
+      --service-account "$GCP_RUNTIME_SA" --allow-unauthenticated --port 8080 --memory 512Mi --max-instances 3
       --set-env-vars "PAYPAL_ENV=sandbox,PUBLIC_BASE_URL=$BASE_URL,DEMO_STORE_ID=$DEMO_STORE_ID"
       --set-secrets "PAYPAL_CLIENT_ID=paypal-client-id:latest,PAYPAL_CLIENT_SECRET=paypal-client-secret:latest,ANTHROPIC_API_KEY=anthropic-api-key:latest,KV_REST_API_URL=kv-rest-api-url:latest,KV_REST_API_TOKEN=kv-rest-api-token:latest"
       --labels "gitlab-pipeline=$CI_PIPELINE_ID,commit=$CI_COMMIT_SHORT_SHA"
