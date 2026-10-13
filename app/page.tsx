@@ -1,69 +1,86 @@
-import Image from "next/image";
+import { CreateStoreForm } from "@/components/CreateStoreForm";
+import { Receipt } from "@/components/Receipt";
+
+const steps = [
+  ["Paste your store address", "Shelf reads your catalog from Shopify, from schema.org product markup, or with Claude when a page has neither."],
+  ["Name the PayPal account that gets paid", "Every order an assistant creates routes payment to that account. You keep your existing checkout too."],
+  ["Hand the storefront to any AI assistant", "Claude, ChatGPT and any MCP client connect to one link. They search, build a cart and send your customer a PayPal approval link."],
+];
+
+const guarantees = [
+  ["Prices come from your catalog", "Assistants choose products and quantities. Totals are computed on the server from your listed prices."],
+  ["Customers approve every payment", "An assistant can prepare an order. Money moves only after the customer reviews it and pays on PayPal."],
+  ["Merchant-friendly limits", "Out-of-stock items are refused, quantities are capped per order, and every order lands in your PayPal account."],
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <main>
+      <section className="mx-auto grid max-w-6xl gap-12 px-4 pt-12 pb-16 sm:px-6 lg:grid-cols-[1.1fr_0.9fr] lg:pt-20">
+        <div className="min-w-0 space-y-6">
+          <p className="font-mono text-sm text-ink-2">Agent checkout for independent stores · PayPal</p>
+          <h1 className="display text-[clamp(2.4rem,5.5vw,4.2rem)] leading-[1.03] font-semibold">
+            AI assistants already recommend stores. Let them <span className="text-accent">check out</span> at yours.
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="max-w-xl text-lg text-ink-2">
+            Suede Shelf turns your product pages into a storefront that Claude, ChatGPT and any MCP assistant can shop. The assistant builds the cart, your customer approves on PayPal, and the payment lands in your PayPal account.
           </p>
+          <div className="rounded-lg border border-rule bg-paper-2 p-5 sm:p-6">
+            <h2 className="mb-4 font-medium">Publish your agent storefront</h2>
+            <CreateStoreForm />
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="min-w-0 lg:pt-10">
+          <p className="mb-3 font-mono text-xs text-ink-3">Example: an assistant shopping a plant store</p>
+          <Receipt
+            title="Agent receipt"
+            meta="via MCP"
+            lines={[
+              { label: "› search_products “low-light plant”", tone: "muted" },
+              { label: "  Golden Pothos", value: "12.00" },
+              { label: "  ZZ Plant", value: "24.00" },
+              { label: "› create_checkout", tone: "muted" },
+              { label: "  2 × Golden Pothos", value: "24.00" },
+              { label: "  Total", value: "24.00 USD" },
+              { label: "› customer approves on PayPal", tone: "muted" },
+              { label: "› check_order", tone: "muted" },
+              { label: "  PAID", value: "captured", tone: "accent" },
+            ]}
+            footer="Prices from the store catalog. Payment approved by the customer."
+          />
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section className="border-t border-rule bg-paper-2">
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-2">
+          <div>
+            <h2 className="display mb-6 text-3xl font-semibold">How it works</h2>
+            <ol className="space-y-6">
+              {steps.map(([title, body], i) => (
+                <li key={title} className="grid grid-cols-[2rem_1fr] gap-3">
+                  <span className="font-mono text-sm text-ink-3">0{i + 1}</span>
+                  <div>
+                    <h3 className="font-medium">{title}</h3>
+                    <p className="text-ink-2">{body}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div>
+            <h2 className="display mb-6 text-3xl font-semibold">What keeps it safe</h2>
+            <dl className="divide-y divide-rule border-y border-rule">
+              {guarantees.map(([title, body]) => (
+                <div key={title} className="py-4">
+                  <dt className="font-medium">{title}</dt>
+                  <dd className="text-ink-2">{body}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }

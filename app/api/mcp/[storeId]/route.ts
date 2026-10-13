@@ -4,7 +4,7 @@
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { getDb } from "@/lib/db";
 import { allow, clientIp } from "@/lib/limit";
-import { NotConfiguredError, shopDeps } from "@/lib/runtime";
+import { shopDeps } from "@/lib/runtime";
 import { createStorefrontServer } from "@/lib/storefront-mcp";
 
 export const maxDuration = 30;
@@ -23,15 +23,7 @@ async function handle(request: Request, ctx: RouteContext<"/api/mcp/[storeId]">)
   const store = await getDb().getStore(storeId);
   if (!store) return rpcError(404, `No store ${storeId}.`);
 
-  let deps;
-  try {
-    deps = shopDeps(request);
-  } catch (error) {
-    if (error instanceof NotConfiguredError) return rpcError(503, error.message);
-    throw error;
-  }
-
-  const server = createStorefrontServer(store, deps);
+  const server = createStorefrontServer(store, shopDeps(request));
   const transport = new WebStandardStreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
   await server.connect(transport);
   try {

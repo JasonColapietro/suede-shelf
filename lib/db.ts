@@ -89,12 +89,14 @@ export function redisDb(redis: Redis): Db {
   };
 }
 
-let shared: Db | null = null;
+// Kept on globalThis: Next.js can load route handlers and pages as separate
+// module instances, and the in-memory fallback must be one store for both.
+const holder = globalThis as typeof globalThis & { __suedeShelfDb?: Db };
 
 export function getDb(env: Record<string, string | undefined> = process.env): Db {
-  if (shared) return shared;
+  if (holder.__suedeShelfDb) return holder.__suedeShelfDb;
   const url = env.KV_REST_API_URL ?? env.UPSTASH_REDIS_REST_URL;
   const token = env.KV_REST_API_TOKEN ?? env.UPSTASH_REDIS_REST_TOKEN;
-  shared = url && token ? redisDb(new Redis({ url, token })) : memoryDb();
-  return shared;
+  holder.__suedeShelfDb = url && token ? redisDb(new Redis({ url, token })) : memoryDb();
+  return holder.__suedeShelfDb;
 }

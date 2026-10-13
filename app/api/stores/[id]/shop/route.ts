@@ -2,7 +2,7 @@ import { z } from "zod";
 import { runShopper } from "@/lib/ai";
 import { getDb } from "@/lib/db";
 import { allow, clientIp } from "@/lib/limit";
-import { NotConfiguredError, getAnthropic, shopDeps } from "@/lib/runtime";
+import { getAnthropic, shopDeps } from "@/lib/runtime";
 
 export const maxDuration = 60;
 
@@ -32,7 +32,6 @@ export async function POST(request: Request, ctx: RouteContext<"/api/stores/[id]
     const reply = await runShopper(anthropic, store, shopDeps(request), parsed.data.messages);
     return Response.json(reply);
   } catch (error) {
-    if (error instanceof NotConfiguredError) return Response.json({ error: error.message }, { status: 503 });
     console.error("shopper failed", error);
     return Response.json({ error: "The shopper hit a problem. Try again." }, { status: 502 });
   }
