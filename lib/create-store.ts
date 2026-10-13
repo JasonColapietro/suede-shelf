@@ -10,7 +10,7 @@ export const CURRENCIES = ["USD", "EUR", "GBP", "CAD", "AUD"] as const;
 
 export const CreateStoreInput = z.object({
   url: z.string().trim().min(4).max(2048),
-  payeeEmail: z.email().max(254),
+  payeeEmail: z.preprocess((v) => (typeof v === "string" && v.trim() === "" ? undefined : v), z.email().max(254).optional()),
   currency: z.enum(CURRENCIES).default("USD"),
 });
 
@@ -47,7 +47,7 @@ export async function createStore(
     id: newStoreId(catalog.storeName),
     name: catalog.storeName,
     sourceUrl: catalog.finalUrl,
-    payeeEmail: input.payeeEmail.toLowerCase(),
+    ...(input.payeeEmail ? { payeeEmail: input.payeeEmail.toLowerCase() } : {}),
     currency: input.currency,
     source,
     products,

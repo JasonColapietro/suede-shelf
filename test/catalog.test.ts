@@ -47,6 +47,33 @@ test("parseJsonLd skips offers in another currency", () => {
   assert.deepEqual(parseJsonLd(JSON_LD_PAGE, "https://shop.test/", "EUR").map((p) => p.name), ["Fiddle Leaf"]);
 });
 
+test("parseShopify makes each size or colour its own buyable item", () => {
+  const products = parseShopify(
+    {
+      products: [
+        {
+          id: 7,
+          title: "Tree Runner",
+          handle: "tree-runner",
+          variants: [
+            { id: 71, title: "9 / Jet Black", price: "100.00", available: true },
+            { id: 72, title: "10 / Jet Black", price: "100.00", available: false },
+          ],
+        },
+      ],
+    },
+    "https://shop.test",
+  );
+  assert.deepEqual(
+    products.map((p) => [p.name, p.available, p.url]),
+    [
+      ["Tree Runner (9 / Jet Black)", true, "https://shop.test/products/tree-runner?variant=71"],
+      ["Tree Runner (10 / Jet Black)", false, "https://shop.test/products/tree-runner?variant=72"],
+    ],
+  );
+  assert.notEqual(products[0].id, products[1].id);
+});
+
 test("parseShopify maps products.json and skips unpriced items", () => {
   const products = parseShopify(
     {

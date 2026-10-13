@@ -10,6 +10,8 @@ import type { Store } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Agent storefront · Suede Shelf", robots: { index: false } };
 
+const SHOWN = 30;
+
 const SOURCE_LABEL = { shopify: "Shopify catalog", "json-ld": "schema.org product markup", ai: "read by Claude from the page" } as const;
 
 const STATUS: Record<string, { label: string; tone: "accent" | "warn" | "muted" }> = {
@@ -72,7 +74,7 @@ async function StoreConsole({ id }: { id: string }) {
           <a href={store.sourceUrl} className="underline underline-offset-4" rel="noopener noreferrer" target="_blank">
             {new URL(store.sourceUrl).hostname}
           </a>
-          , {SOURCE_LABEL[store.source]}. Payments go to {store.payeeEmail} in {store.currency}.
+          , {SOURCE_LABEL[store.source]}. Payments go to {store.payeeEmail ?? "the Suede Shelf demo merchant account"} in {store.currency}.
         </p>
       </section>
 
@@ -97,7 +99,7 @@ async function StoreConsole({ id }: { id: string }) {
         <div className="min-w-0">
           <h2 className="display mb-4 text-2xl font-semibold">Catalog agents can buy from</h2>
           <ul className="divide-y divide-rule border-y border-rule">
-            {store.products.map((p) => (
+            {store.products.slice(0, SHOWN).map((p) => (
               <li key={p.id} className="flex items-baseline justify-between gap-4 py-3">
                 <div className="min-w-0">
                   <p className="font-medium">
@@ -117,6 +119,11 @@ async function StoreConsole({ id }: { id: string }) {
               </li>
             ))}
           </ul>
+          {store.products.length > SHOWN ? (
+            <p className="mt-3 text-sm text-ink-3">
+              And {store.products.length - SHOWN} more sizes and styles. Assistants search the full catalog.
+            </p>
+          ) : null}
         </div>
         <div className="min-w-0">
           <h2 className="display mb-4 text-2xl font-semibold">Agent receipts</h2>

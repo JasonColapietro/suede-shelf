@@ -53,3 +53,11 @@ test("explains when nothing sellable is found or the site is down", async () => 
     StoreSetupError,
   );
 });
+
+test("a blank payee email is allowed and stored as absent", async () => {
+  const parsed = CreateStoreInput.parse({ url: "crumb.test", payeeEmail: "  " });
+  assert.equal(parsed.payeeEmail, undefined);
+  const html = `<title>Crumb</title><script type="application/ld+json">{"@type":"Product","name":"Loaf","offers":{"price":"8","priceCurrency":"USD"}}</script>`;
+  const store = await createStore(parsed, { db: memoryDb(), anthropic: null, fetcher: noShopify(html) });
+  assert.equal("payeeEmail" in store, false);
+});

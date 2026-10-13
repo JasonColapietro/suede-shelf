@@ -25,6 +25,15 @@ export default function Home() {
           <p className="max-w-xl text-lg text-ink-2">
             Suede Shelf turns your product pages into a storefront that Claude, ChatGPT and any MCP assistant can shop. The assistant builds the cart, your customer approves on PayPal, and the payment lands in your PayPal account.
           </p>
+          {process.env.DEMO_STORE_ID ? (
+            <a
+              href={`/s/${process.env.DEMO_STORE_ID}`}
+              className="inline-flex items-center gap-2 rounded-md border border-ink px-4 py-2.5 font-medium hover:bg-paper-2"
+            >
+              Watch an assistant shop the demo store
+              <span aria-hidden="true">→</span>
+            </a>
+          ) : null}
           <div className="rounded-lg border border-rule bg-paper-2 p-5 sm:p-6">
             <h2 className="mb-4 font-medium">Publish your agent storefront</h2>
             <CreateStoreForm />

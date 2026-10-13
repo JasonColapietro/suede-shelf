@@ -7,7 +7,9 @@ import { createHash } from "node:crypto";
 import { safeFetch, type FetchResult } from "./safe-fetch";
 import type { CatalogSource, Product } from "./types";
 
-export const MAX_PRODUCTS = 50;
+/** Items an agent can buy; each Shopify variant (a size or colour) counts as one. */
+export const MAX_PRODUCTS = 300;
+const SHOPIFY_PRODUCT_LIMIT = 50;
 
 export type CatalogResult = {
   storeName: string;
@@ -79,7 +81,7 @@ type ShopifyProduct = {
   handle?: string;
   body_html?: string;
   images?: Array<{ src?: string }>;
-  variants?: Array<{ price?: string; sku?: string; available?: boolean }>;
+  variants?: Array<{ id?: number | string; title?: string; price?: string; sku?: string; available?: boolean }>;
 };
 
 export function parseShopify(json: unknown, origin: string): Product[] {
@@ -87,20 +89,28 @@ export function parseShopify(json: unknown, origin: string): Product[] {
   if (!Array.isArray(list)) return [];
   const products: Product[] = [];
   for (const p of list) {
-    const variant = p.variants?.[0];
-    const price = toPrice(variant?.price);
-    if (!p.title || !price) continue;
-    const url = p.handle ? `${origin}/products/${p.handle}` : undefined;
-    products.push({
-      id: productId(url ?? `${origin}#${p.id ?? p.title}`),
-      name: decodeEntities(p.title),
-      description: clip(p.body_html),
-      price,
-      url,
-      image: p.images?.[0]?.src,
-      sku: variant?.sku || undefined,
-      available: p.variants?.some((v) => v.available !== false) ?? true,
-    });
+    if (!p.title) continue;
+    const base = p.handle ? `${origin}/products/${p.handle}` : `${origin}#${p.id ?? p.title}`;
+    const title = decodeEntities(p.title);
+    const description = clip(p.body_html);
+    const image = p.images?.[0]?.src;
+    // A shopper buys a size and a colour, not a style: each variant is its own item.
+    for (const variant of p.variants ?? []) {
+      const price = toPrice(variant.price);
+      if (!price) continue;
+      const named = variant.title && variant.title !== "Default Title";
+      const url = variant.id !== undefined && p.handle ? `${base}?variant=${variant.id}` : p.handle ? base : undefined;
+      products.push({
+        id: productId(named ? `${base}?variant=${variant.id ?? variant.title}` : base),
+        name: named ? `${title} (${decodeEntities(variant.title!)})` : title,
+        description,
+        price,
+        url,
+        image,
+        sku: variant.sku || undefined,
+        available: variant.available !== false,
+      });
+    }
   }
   return products;
 }
@@ -194,7 +204,7 @@ export async function readCatalog(
   const pageText = stripHtml(page.text).slice(0, 20_000);
   const base = { storeName, pageText, finalUrl: page.finalUrl };
 
-  const shopify = await fetcher(`${origin}/products.json?limit=${MAX_PRODUCTS}`);
+  const shopify = await fetcher(`${origin}/products.json?limit=${SHOPIFY_PRODUCT_LIMIT}`);
   if (shopify.ok) {
     try {
       const products = dedupe(parseShopify(JSON.parse(shopify.text), origin));

@@ -44,9 +44,9 @@ export function CreateStoreForm() {
       <div className="grid gap-4 sm:grid-cols-[1fr_7rem]">
         <div className="space-y-1.5">
           <label htmlFor="payeeEmail" className="text-sm font-medium">
-            PayPal email that receives payments
+            PayPal email that receives payments <span className="font-normal text-ink-3">(optional)</span>
           </label>
-          <input id="payeeEmail" name="payeeEmail" type="email" required autoComplete="email" placeholder="you@business.example.com" className={field} />
+          <input id="payeeEmail" name="payeeEmail" type="email" autoComplete="email" placeholder="you@business.example.com" className={field} />
         </div>
         <div className="space-y-1.5">
           <label htmlFor="currency" className="text-sm font-medium">
@@ -59,7 +59,7 @@ export function CreateStoreForm() {
           </select>
         </div>
       </div>
-      <p className="text-sm text-ink-3">This deployment runs on PayPal Sandbox. Use a sandbox business account email so test payments land somewhere you can see them.</p>
+      <p className="text-sm text-ink-3">This deployment runs on PayPal Sandbox. Enter a sandbox business email to receive test payments there, or leave it blank to use the demo merchant account.</p>
       {error ? (
         <p id="create-error" role="alert" className="rounded-md border border-danger/40 px-3 py-2 text-sm text-danger">
           {error}

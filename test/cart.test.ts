@@ -41,3 +41,9 @@ test("order body routes payment to the merchant with a matching breakdown", () =
   assert.deepEqual(unit.items, [{ name: "Monstera", quantity: "2", unit_amount: { currency_code: "USD", value: "39.50" }, sku: "M-1" }]);
   assert.equal(body.payment_source.paypal.experience_context.user_action, "PAY_NOW");
 });
+
+test("without a payee email the order pays the app's own merchant account", () => {
+  const { payeeEmail: _omit, ...demo } = store;
+  const body = orderBody(demo, priceCart(demo, [{ productId: "pothos", quantity: 1 }]), { returnUrl: "r", cancelUrl: "c" });
+  assert.equal("payee" in body.purchase_units[0], false);
+});

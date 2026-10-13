@@ -49,7 +49,7 @@ export function orderBody(store: Store, cart: PricedCart, urls: { returnUrl: str
         reference_id: store.id,
         custom_id: store.id,
         description: `Order from ${store.name} via Suede Shelf`.slice(0, 127),
-        payee: { email_address: store.payeeEmail },
+        ...(store.payeeEmail ? { payee: { email_address: store.payeeEmail } } : {}),
         amount: { ...money(cart.total), breakdown: { item_total: money(cart.total) } },
         items: cart.lines.map((l) => ({
           name: l.name.slice(0, 127),
