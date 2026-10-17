@@ -1,0 +1,62 @@
+{
+  "checkedAt": "2026-10-17T09:25:11.915Z",
+  "deployment": "https://suede-shelf.vercel.app/s/suede-demo-catalog-2f78dff6",
+  "sourceCommit": "be2483f338018e4869de290b5914f529dde83c5e",
+  "provider": "Nebius Token Factory",
+  "model": "nvidia/nemotron-3-super-120b-a12b",
+  "modelBasis": "deployed source default; no NEBIUS_MODEL override configured",
+  "catalog": [
+    {
+      "id": "M2f0xuaxdc",
+      "name": "Pocket Notebook",
+      "price": "12.50",
+      "currency": "USD",
+      "available": true
+    },
+    {
+      "id": "tmtiHgIMzx",
+      "name": "Canvas Pouch",
+      "price": "18.00",
+      "currency": "USD",
+      "available": true
+    },
+    {
+      "id": "JXUTJUsdim",
+      "name": "Desk Mug",
+      "price": "24.00",
+      "currency": "USD",
+      "available": true
+    },
+    {
+      "id": "LPikHJeMyx",
+      "name": "Desk Tray",
+      "price": "30.00",
+      "currency": "USD",
+      "available": false
+    }
+  ],
+  "liveBrowserCart": {
+    "items": [
+      {
+        "name": "Pocket Notebook",
+        "quantity": 2
+      },
+      {
+        "name": "Canvas Pouch",
+        "quantity": 1
+      }
+    ],
+    "approvalHost": "www.sandbox.paypal.com",
+    "total": "43.00",
+    "currency": "USD",
+    "status": "PAYER_ACTION_REQUIRED",
+    "paid": false,
+    "repeatedCheckPaid": false
+  },
+  "liveToolGuards": {
+    "soldOutRejected": true,
+    "quantity11Rejected": true,
+    "unknownProductRejected": true
+  },
+  "completedPurchase": false
+}

@@ -6,6 +6,10 @@ AI assistants already recommend products. Suede Shelf lets them finish the sale:
 
 Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) by [Suede AI](https://seo.suedeai.ai).
 
+## NVIDIA Nemotron on Nebius
+
+The shopping assistant also supports NVIDIA Nemotron through Nebius Token Factory. The verified public demo currently uses this provider. See the [Nebius setup and live evidence](docs/nebius/README.md) and [submission draft](docs/nebius/devpost-draft.md). Set `SHOPPER_PROVIDER=nebius` and `NEBIUS_API_KEY` to select it; the code default remains Claude when the provider is unset.
+
 ## How it works
 
 1. **Merchant pastes a store address and a PayPal email.** Shelf reads the catalog from Shopify's public `products.json`, then schema.org `Product` markup, then Claude for pages that have neither.
@@ -62,12 +66,12 @@ npx @modelcontextprotocol/inspector
 ## Tests
 
 ```bash
-npm test          # 34 tests: catalog parsing, SSRF guard, cart pricing, PayPal client, MCP storefront, Claude flows
+npm test          # 43 tests: catalog parsing, SSRF guard, cart pricing, PayPal client, MCP storefront, Claude flows
 npm run typecheck
 npm run build
 ```
 
-PayPal and Claude are faked at the HTTP layer in tests, so the suite runs offline and spends nothing.
+PayPal, Claude and Nebius are faked at the HTTP layer in tests, so the suite runs offline and spends nothing.
 
 ## Tools used
 
