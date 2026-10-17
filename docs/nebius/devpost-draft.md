@@ -1,6 +1,6 @@
 # Suede Shelf: a storefront for AI shoppers
 
-Best Apps and Agents submission copy. Live inference and sandbox checkout verified October 17, 2026. Final submission awaits the public YouTube video and completion of the Devpost form.
+Best Apps and Agents submission copy. Live inference and sandbox checkout verified October 17, 2026. The public YouTube demonstration is attached to the saved Devpost draft. Final submission awaits personal form responses and rules/terms acceptance.
 
 ## Inspiration
 
@@ -55,7 +55,7 @@ The earlier storefront was built for the PayPal AI Hackathon. This entry builds 
 - Setup: https://github.com/JasonColapietro/suede-shelf/blob/main/docs/nebius/README.md
 - Live evidence: https://github.com/JasonColapietro/suede-shelf/blob/main/docs/nebius/live-verification.md
 - Devpost draft: https://devpost.com/submit-to/30790-nebius-x-nvidia-global-ai-hackathon/manage/submissions/1241992-suede-shelf-a-storefront-for-ai-shoppers/project_details/edit
-- Demonstration: [1:55.53 captioned recording](demo.mp4), with [publishing copy](video.md). Required YouTube upload pending channel sign-in.
+- Public YouTube demonstration: https://www.youtube.com/watch?v=EWiX1nd5HcY (1:55.53 captioned recording; public playback verified without signing in). [Repository copy](demo.mp4) and [publishing copy](video.md).
 - Deadline: October 30, 2026, 1:00 PM Eastern (10:00 AM Pacific).
-- Submission status: draft, not submitted. Story, demo/source links and technical feedback are saved. Required submitter/eligibility fields, personal learning responses, public YouTube URL and final terms acceptance remain.
+- Submission status: draft, not submitted; Devpost reports 3/5 steps done. Story, demo/source links, public YouTube video, technology tags and technical feedback are saved. Required submitter/eligibility fields, personal learning responses and final rules/terms acceptance remain.
 - Form history selection: New relative to August 26, 2026 (first repository commits October 12); the pre-Nebius storefront work is still explicitly disclosed.

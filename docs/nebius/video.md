@@ -3,6 +3,7 @@
 - [Download/play the demonstration](demo.mp4): 1 minute 55.53 seconds, 1920 × 1080, H.264, captioned and silent.
 - [Thumbnail](demo-thumbnail.png).
 - [Working application](https://suede-shelf.vercel.app/s/suede-demo-catalog-2f78dff6).
+- [Public YouTube demonstration](https://www.youtube.com/watch?v=EWiX1nd5HcY), published on Suede AI's channel October 17, 2026. Playback verified without signing in.
 
 The video includes real browser footage recorded October 17, 2026: a budget-based catalog recommendation and a $43.00 PayPal Sandbox checkout. The receipt is a subsequent capture of the persisted storefront after independent live order-status checks. Title and explanation cards are added around that footage. Fictional catalog data is explicitly labeled. No credentials, raw PayPal approval links, complete order IDs, stock media, music or third-party merchant images appear.
 
@@ -29,4 +30,4 @@ Prepared for the Nebius x NVIDIA Global AI Hackathon, Best Apps and Agents track
 
 ## Status
 
-The video is available in this public repository. The required YouTube upload is still pending channel sign-in; a repository video alone does not satisfy the official YouTube submission requirement. Continue with existing Devpost submission 1241992, not a new entry.
+The video is public on Suede AI's YouTube channel and in this repository. The YouTube URL is saved in the existing Devpost submission 1241992; Devpost displays its embedded player. The entry remains a draft pending personal form responses and final rules/terms acceptance. Continue that submission, not a new entry.
