@@ -14,7 +14,7 @@ The endpoint is fixed to `https://api.tokenfactory.nebius.com/v1/chat/completion
 
 Structured Shopify and JSON-LD catalogs do not need another model. Optional unstructured catalog extraction still uses Claude if ANTHROPIC_API_KEY is set; the shopping agent uses only Nebius when selected, with no silent provider fallback.
 
-The existing deployment defaults to Claude until SHOPPER_PROVIDER is explicitly changed. Use a separate Vercel project or preview environment for this edition if retaining the existing PayPal entry. Set PUBLIC_BASE_URL to that deployment's actual origin. Keep PAYPAL_ENV=sandbox for demonstrations.
+Code defaults to Claude unless SHOPPER_PROVIDER is explicitly set. The verified production demo currently selects Nebius; this was already configured before the October 17 acceptance run. Use a separate Vercel project or preview environment for this edition if retaining the existing PayPal entry. Set PUBLIC_BASE_URL to that deployment's actual origin. Keep PAYPAL_ENV=sandbox for demonstrations.
 
 ## Architecture and safeguards
 
@@ -29,6 +29,12 @@ Calls are sequential; model output is validated before use; unknown tools and in
 Offline tests exercise real MCP dispatch with a simulated Nebius HTTP provider. They cover product search, total calculation, duplicate checkout attempts, unapproved payment state, malformed calls, truncated model output, loop limits and recovery after checkout. They do not prove live inference access.
 
 Live acceptance: open a catalog, ask for products under a budget, request one specific in-stock variant, verify the sandbox approval link and total, and verify the order stays unpaid until buyer approval. Record a short real walkthrough after live inference is configured.
+
+## Verified public demonstration
+
+Open https://suede-shelf.vercel.app/s/suede-demo-catalog-2f78dff6. Ask for in-stock gifts under $20, then request two Pocket Notebooks and one Canvas Pouch. The catalog total is $43.00 USD. The goods are fictional sandbox data; no items are sold or shipped. Customer approval remains required.
+
+See [live verification](live-verification.md) for the deployed source, actual inference evidence, unpaid order state and separate offline test results. The website is hosted on Vercel and calls Nebius Token Factory at runtime.
 
 ## Sources
 
