@@ -20,7 +20,7 @@ A tool-capable model can repeat a checkout call or fail after the order is creat
 
 ## Accomplishments
 
-The implementation connects a second model provider to the existing MCP storefront without changing pricing or payment approval rules. Automated offline tests cover the complete tool loop and failure paths. Live Nebius inference and the recorded walkthrough remain pending account setup.
+The implementation connects a second model provider to the existing MCP storefront without changing pricing or payment approval rules. Automated offline tests cover the complete tool loop and failure paths. Live NVIDIA Nemotron inference on Nebius is verified: catalog search returned matching products and prices, and the browser shopper created a $25.00 PayPal Sandbox checkout. The order remained unpaid pending buyer approval. The recorded walkthrough remains pending.
 
 ## What we learned
 
@@ -28,7 +28,7 @@ The MCP boundary makes the catalog and checkout tools reusable across model prov
 
 ## What's next
 
-Evaluate shopping quality and latency on real Nebius requests, complete the live walkthrough, and improve cross-message checkout deduplication.
+Expand shopping-quality and latency evaluations, record the live walkthrough, and improve cross-message checkout deduplication.
 
 ## Existing project disclosure
 
@@ -37,7 +37,7 @@ Suede Shelf's storefront, catalog import, Claude shopper, Redis persistence, MCP
 ## Submission checklist
 
 - Public repository: https://github.com/JasonColapietro/suede-shelf (MIT).
-- Live Nebius deployment URL: pending account setup and verification.
+- Live Nebius deployment URL: https://suede-shelf.vercel.app/s/allbirds-56301b74 (verified October 17, 2026).
 - Public video, maximum three minutes: pending real walkthrough.
-- Exact NVIDIA model ID and live inference evidence: pending.
-- Feedback: add observations from actual Token Factory use, not simulated tests.
+- NVIDIA model: `nvidia/nemotron-3-super-120b-a12b`. Evidence: [live verification](live-verification.md).
+- Feedback: Runtime tool discovery reused the existing MCP storefront. The live provider returns nullable tool-call fields; accepting that response shape resolved initial validation failures. Trial credits plus the hackathon promo funded the demonstration.
