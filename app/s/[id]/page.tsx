@@ -91,7 +91,7 @@ async function StoreConsole({ id }: { id: string }) {
         <div className="min-w-0 space-y-4">
           <h2 className="display text-2xl font-semibold">Try it here</h2>
           <ShopperChat storeId={store.id} storeName={store.name} suggestions={suggestionsFor(store)} />
-          <p className="text-sm text-ink-3">The demo assistant is Claude, connected to this same MCP storefront. Pay with a PayPal Sandbox buyer account.</p>
+          <p className="text-sm text-ink-3">The demo assistant uses {process.env.SHOPPER_PROVIDER === "nebius" ? "NVIDIA Nemotron on Nebius Token Factory" : "Claude"}, connected to this same MCP storefront. Pay with a PayPal Sandbox buyer account.</p>
         </div>
       </section>
 
