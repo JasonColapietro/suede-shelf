@@ -58,3 +58,9 @@ test("checkout link survives a later provider failure without another order", as
   assert.match(reply.text, /not yet confirmed/);
   assert.equal(h.counts().created, 1);
 });
+
+ test("Nebius nullable tool_calls is a valid final answer", async () => {
+  const h = harness([{ finish_reason: "stop", message: { content: "Golden Pothos costs 12.00 USD.", tool_calls: null } }]);
+  assert.equal((await h.run()).text, "Golden Pothos costs 12.00 USD.");
+  assert.equal(h.counts().created, 0);
+});
