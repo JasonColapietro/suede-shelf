@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { runNebiusShopper } from "@/lib/nebius";
 import { runShopper } from "@/lib/ai";
 import { getDb } from "@/lib/db";
 import { allow, clientIp } from "@/lib/limit";
@@ -26,13 +27,16 @@ export async function POST(request: Request, ctx: RouteContext<"/api/stores/[id]
   if (!store) return Response.json({ error: "Store not found." }, { status: 404 });
 
   const anthropic = getAnthropic();
-  if (!anthropic) return Response.json({ error: "The AI shopper is not configured on this deployment." }, { status: 503 });
+  const nebius = process.env.SHOPPER_PROVIDER === "nebius";
+  if (nebius ? !process.env.NEBIUS_API_KEY : !anthropic) return Response.json({ error: "The AI shopper is not configured on this deployment." }, { status: 503 });
 
   try {
-    const reply = await runShopper(anthropic, store, shopDeps(request), parsed.data.messages);
+    const reply = nebius
+      ? await runNebiusShopper({ apiKey: process.env.NEBIUS_API_KEY!, model: process.env.NEBIUS_MODEL }, store, shopDeps(request), parsed.data.messages)
+      : await runShopper(anthropic!, store, shopDeps(request), parsed.data.messages);
     return Response.json(reply);
   } catch (error) {
-    console.error("shopper failed", error);
+    console.error("shopper failed", error instanceof Error ? error.name : "UnknownError");
     return Response.json({ error: "The shopper hit a problem. Try again." }, { status: 502 });
   }
 }

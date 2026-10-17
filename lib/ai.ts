@@ -80,7 +80,7 @@ export type ChatTurn = { role: "user" | "assistant"; content: string };
 
 export type ShopperReply = { text: string; approvalUrl?: string; orderId?: string };
 
-function shopperSystem(store: Store): string {
+export function shopperSystem(store: Store): string {
   return [
     `You are a shopping assistant helping a customer buy from ${store.name}. You can only act through the store's tools.`,
     "Find products with search_products, confirm the cart with the customer when the request is ambiguous, then call create_checkout.",
