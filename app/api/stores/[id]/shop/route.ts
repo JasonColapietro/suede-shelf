@@ -36,7 +36,8 @@ export async function POST(request: Request, ctx: RouteContext<"/api/stores/[id]
       : await runShopper(anthropic!, store, shopDeps(request), parsed.data.messages);
     return Response.json(reply);
   } catch (error) {
-    console.error("shopper failed", error instanceof Error ? error.name : "UnknownError");
+    console.error("shopper failed", error instanceof Error ? error.name : "UnknownError",
+      error instanceof z.ZodError ? error.issues.map(issue => ({ code: issue.code, path: issue.path })) : undefined);
     return Response.json({ error: "The shopper hit a problem. Try again." }, { status: 502 });
   }
 }

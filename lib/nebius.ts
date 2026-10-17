@@ -13,7 +13,7 @@ const Completion = z.object({ choices: z.array(z.object({
   message: z.object({ content: z.string().nullable().optional(), tool_calls: z.array(z.object({
     id: z.string().min(1), type: z.literal("function"),
     function: z.object({ name: z.string(), arguments: z.string() }),
-  })).max(8).optional() }),
+  })).max(8).nullish() }),
 })).min(1) });
 
 export async function runNebiusShopper(
