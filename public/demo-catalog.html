@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta property="og:site_name" content="Suede Demo Catalog">
+  <title>Suede Demo Catalog</title>
+  <style>
+    body { margin: 0; background: #111518; color: #f4f0e9; font: 18px/1.6 system-ui, sans-serif; }
+    main { max-width: 850px; margin: auto; padding: 60px 24px; }
+    h1 { font-size: clamp(32px, 6vw, 56px); line-height: 1.1; }
+    article { border-top: 1px solid #607071; padding: 18px 0; }
+    h2 { margin-bottom: 4px; } a { color: #a4eed9; } .note { color: #c8d2ce; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@graph":[
+    {"@type":"Product","name":"Pocket Notebook","description":"Fictional sandbox item. A compact notebook for ideas; no goods are sold or shipped.","sku":"DEMO-NOTEBOOK","url":"https://suede-shelf.vercel.app/demo-catalog.html#notebook","offers":{"@type":"Offer","price":"12.50","priceCurrency":"USD","availability":"https://schema.org/InStock"}},
+    {"@type":"Product","name":"Canvas Pouch","description":"Fictional sandbox item. A zip pouch for stationery; no goods are sold or shipped.","sku":"DEMO-POUCH","url":"https://suede-shelf.vercel.app/demo-catalog.html#pouch","offers":{"@type":"Offer","price":"18.00","priceCurrency":"USD","availability":"https://schema.org/InStock"}},
+    {"@type":"Product","name":"Desk Mug","description":"Fictional sandbox item. A ceramic desk mug; no goods are sold or shipped.","sku":"DEMO-MUG","url":"https://suede-shelf.vercel.app/demo-catalog.html#mug","offers":{"@type":"Offer","price":"24.00","priceCurrency":"USD","availability":"https://schema.org/InStock"}},
+    {"@type":"Product","name":"Desk Tray","description":"Fictional sandbox item used to test out-of-stock refusal; no goods are sold or shipped.","sku":"DEMO-TRAY","url":"https://suede-shelf.vercel.app/demo-catalog.html#tray","offers":{"@type":"Offer","price":"30.00","priceCurrency":"USD","availability":"https://schema.org/OutOfStock"}}
+  ]}
+  </script>
+</head>
+<body>
+  <main>
+    <p>Suede Shelf / demonstration catalog</p>
+    <h1>A small catalog. A real agent workflow.</h1>
+    <p class="note">These products are fictional test data for PayPal Sandbox. No goods are sold or shipped. Names and descriptions were created for this demonstration.</p>
+    <article id="notebook"><h2>Pocket Notebook</h2><p>$12.50 USD · In stock</p><p>A compact notebook for ideas.</p></article>
+    <article id="pouch"><h2>Canvas Pouch</h2><p>$18.00 USD · In stock</p><p>A zip pouch for stationery.</p></article>
+    <article id="mug"><h2>Desk Mug</h2><p>$24.00 USD · In stock</p><p>A ceramic desk mug.</p></article>
+    <article id="tray"><h2>Desk Tray</h2><p>$30.00 USD · Out of stock</p><p>An unavailable item for testing stock controls.</p></article>
+    <p><a href="/">Open Suede Shelf</a></p>
+  </main>
+</body>
+</html>
