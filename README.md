@@ -8,7 +8,7 @@ Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) by [
 
 ## NVIDIA Nemotron on Nebius
 
-The shopping assistant also supports NVIDIA Nemotron through Nebius Token Factory. The verified public demo currently uses this provider. See the [Nebius setup and live evidence](docs/nebius/README.md) and [submission draft](docs/nebius/devpost-draft.md). Set `SHOPPER_PROVIDER=nebius` and `NEBIUS_API_KEY` to select it; the code default remains Claude when the provider is unset.
+The shopping assistant also supports NVIDIA Nemotron through Nebius Token Factory. The verified public demo currently uses this provider. See the [Nebius setup and live evidence](docs/nebius/README.md) and [submission materials and status](docs/nebius/devpost-draft.md). Set `SHOPPER_PROVIDER=nebius` and `NEBIUS_API_KEY` to select it; the code default remains Claude when the provider is unset.
 
 ## How it works
 
@@ -19,7 +19,7 @@ The shopping assistant also supports NVIDIA Nemotron through Nebius Token Factor
    - `check_order`: reports whether the customer paid, and captures the order once PayPal says it is approved
 3. **The customer approves on PayPal.** Shelf creates a PayPal Orders v2 order with `intent: CAPTURE`, `payee.email_address` set to the merchant, and `user_action: PAY_NOW`. After approval, the return page (or the agent's `check_order` call) captures it.
 
-The store page also includes a demo shopper: Claude connected to the same MCP storefront through the Anthropic SDK's `mcpTools` helper, so judges can watch an agent shop without setting up their own client.
+The store page also includes a demo shopper connected to the same MCP storefront, so judges can watch an agent shop without setting up their own client. With `SHOPPER_PROVIDER=nebius`, NVIDIA Nemotron calls the MCP tools through the Nebius adapter. Otherwise, Claude uses the Anthropic SDK's `mcpTools` helper. The public Nebius demonstration selects the Nemotron provider.
 
 ### Safety model
 
@@ -42,11 +42,13 @@ npm run dev                  # http://localhost:3000
 | Variable | Needed for |
 |---|---|
 | `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` | Creating and capturing orders. Get them from a **Sandbox** REST app in the [PayPal Developer Dashboard](https://developer.paypal.com/dashboard/applications). |
-| `ANTHROPIC_API_KEY` | Catalog extraction for pages without structured data, and the demo shopper. |
+| `SHOPPER_PROVIDER` | Set to `nebius` for the NVIDIA Nemotron shopper; otherwise the shopper uses Claude. |
+| `NEBIUS_API_KEY`, `NEBIUS_MODEL` | Token Factory API key and optional model override for the Nebius shopper. Default model: `nvidia/nemotron-3-super-120b-a12b`. |
+| `ANTHROPIC_API_KEY` | Optional catalog extraction for pages without structured data, and the Claude shopper when selected. Not required by the Nebius shopper. |
 | `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Durable stores and orders on serverless hosts. Without them, data lives in memory. |
 | `PUBLIC_BASE_URL` | Optional fixed origin for PayPal return links. |
 
-Browsing and search work with no keys at all. Checkout needs PayPal, and the demo shopper needs Anthropic.
+Browsing and MCP catalog search work with no model keys. Checkout needs PayPal. The browser shopper needs the selected provider's API key: Nebius for `SHOPPER_PROVIDER=nebius`, otherwise Anthropic. Structured Shopify and JSON-LD import do not require Claude.
 
 ### Try a full purchase in Sandbox
 
@@ -76,7 +78,8 @@ PayPal, Claude and Nebius are faked at the HTTP layer in tests, so the suite run
 ## Tools used
 
 - **PayPal:** Orders v2 REST API (create, get, capture) in Sandbox, with payee routing and idempotency keys.
-- **Claude** (`claude-opus-5-5` via `@anthropic-ai/sdk`): structured-output catalog extraction, and the demo shopping agent using the SDK tool runner with `mcpTools` over the store's MCP server. Server-side refusal fallbacks are enabled for the shopper.
+- **NVIDIA Nemotron** (`nvidia/nemotron-3-super-120b-a12b`): the selected public demo shopper, using runtime function-calling inference through Nebius Token Factory. The app is hosted on Vercel, not Nebius AI Cloud.
+- **Claude** (`claude-opus-5-5` via `@anthropic-ai/sdk`): optional unstructured catalog extraction and the alternate shopper using the SDK tool runner with `mcpTools`. Server-side refusal fallbacks apply to the Claude shopper.
 - **Model Context Protocol** TypeScript SDK: the per-store storefront server, served statelessly over Streamable HTTP.
 - **Next.js 16** on Vercel, **Upstash Redis** for storage.
 

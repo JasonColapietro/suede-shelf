@@ -1,6 +1,6 @@
 # Suede Shelf: a storefront for AI shoppers
 
-Best Apps and Agents submission copy. Live inference and sandbox checkout verified October 17, 2026. The public YouTube demonstration is attached to the saved Devpost draft. Final submission awaits personal form responses and rules/terms acceptance.
+Best Apps and Agents submission materials. Live inference and sandbox checkout were verified October 17, 2026. Devpost confirmed submission of entry `1241992` on October 17 at 19:23 UTC. Earlier draft-state notes are superseded by that confirmation. The filename is retained to preserve existing links; it is not the current submission status. See the [October 29 audit](submission-audit-2026-10-29.md) for verified evidence and remaining access limits.
 
 ## Inspiration
 
@@ -54,8 +54,9 @@ The earlier storefront was built for the PayPal AI Hackathon. This entry builds 
 - Public repository (MIT): https://github.com/JasonColapietro/suede-shelf
 - Setup: https://github.com/JasonColapietro/suede-shelf/blob/main/docs/nebius/README.md
 - Live evidence: https://github.com/JasonColapietro/suede-shelf/blob/main/docs/nebius/live-verification.md
-- Devpost draft: https://devpost.com/submit-to/30790-nebius-x-nvidia-global-ai-hackathon/manage/submissions/1241992-suede-shelf-a-storefront-for-ai-shoppers/project_details/edit
+- Existing Devpost entry (edit only before the deadline): https://devpost.com/submit-to/30790-nebius-x-nvidia-global-ai-hackathon/manage/submissions/1241992-suede-shelf-a-storefront-for-ai-shoppers/project_details/edit
 - Public YouTube demonstration: https://www.youtube.com/watch?v=EWiX1nd5HcY (1:55.53 captioned recording; public playback verified without signing in). [Repository copy](demo.mp4) and [publishing copy](video.md).
 - Deadline: October 30, 2026, 1:00 PM Eastern (10:00 AM Pacific).
-- Submission status: draft, not submitted; Devpost reports 3/5 steps done. Story, demo/source links, public YouTube video, technology tags and technical feedback are saved. Required submitter/eligibility fields, personal learning responses and final rules/terms acceptance remain.
-- Form history selection: New relative to August 26, 2026 (first repository commits October 12); the pre-Nebius storefront work is still explicitly disclosed.
+- Submission status: Devpost's October 17 confirmation establishes that entry `1241992` was submitted. The October 29 audit could not inspect the authenticated form, so its current field values, selected track, eligibility answers and final manager state have not been independently reverified. Do not infer that any field remains blank from the earlier 3/5 draft snapshot. Preserve this entry; do not create a duplicate.
+- Historical form selection recorded October 17: New relative to August 26, 2026 (first repository commits October 12); the pre-Nebius storefront work is explicitly disclosed. The current saved selection still requires authenticated readback.
+- Freeze: the organizers' October 27 checklist prohibits changes to the submission, repository, video and project materials after October 30, 2026, 1:00 PM Eastern. Keep the existing demo available through judging ending December 15, 2026.
