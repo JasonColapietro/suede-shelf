@@ -30,4 +30,6 @@ Prepared for the Nebius x NVIDIA Global AI Hackathon, Best Apps and Agents track
 
 ## Status
 
-The video is public on Suede AI's YouTube channel and in this repository. The YouTube URL is saved in the existing Devpost submission 1241992; Devpost displays its embedded player. The entry remains a draft pending personal form responses and final rules/terms acceptance. Continue that submission, not a new entry.
+The October 17 record establishes publication on Suede AI's YouTube channel and an embedded player saved in the existing Devpost entry `1241992`. Devpost confirmed submission later that day at 19:23 UTC. Earlier statements that the entry remained a draft are superseded.
+
+On October 29, the public watch page loaded without sign-in, displayed a duration of 1:56, and showed the model, demo/repository links, sandbox limitations and existing-project disclosure. Playback buffered at 0:00 in the audit browser, so this is a page-and-metadata recheck, not a new successful playback verification. The authenticated Devpost video field was not re-read. Preserve the existing entry and video; do not create a duplicate. See the [submission audit](submission-audit-2026-10-29.md).

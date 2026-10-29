@@ -1,6 +1,6 @@
 # Technical answers and product feedback
 
-Saved in Devpost draft 1241992 on October 17, 2026. Numeric assessments describe this limited functional sample, not a benchmark. Personal eligibility fields and final terms acceptance remain for the entrant.
+These technical answers were recorded as saved in entry `1241992` on October 17, 2026. Devpost subsequently confirmed submission that day at 19:23 UTC. Numeric assessments describe the limited functional sample, not a benchmark. The October 29 audit did not obtain authenticated access to re-read the submitted answers or personal eligibility declarations; it does not assume they remain incomplete. See the [submission audit](submission-audit-2026-10-29.md).
 
 ## Project history and improvements
 
