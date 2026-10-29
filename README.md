@@ -6,6 +6,10 @@ AI assistants already recommend products. Suede Shelf lets them finish the sale:
 
 Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/) by [Suede AI](https://seo.suedeai.ai).
 
+## PayPal judge quick start
+
+Open the [working sandbox storefront](https://suede-shelf.vercel.app/s/suede-demo-catalog-2f78dff6), [public video](https://www.youtube.com/watch?v=EWiX1nd5HcY), and [PayPal judge guide](docs/paypal-submission.md). The guide explains PayPal's contribution, gives repeatable test prompts, and separates checkout creation from completed-payment evidence. No completed customer payment has been demonstrated in the verified walkthrough.
+
 ## NVIDIA Nemotron on Nebius
 
 The shopping assistant also supports NVIDIA Nemotron through Nebius Token Factory. The verified public demo currently uses this provider. See the [Nebius setup and live evidence](docs/nebius/README.md) and [submission materials and status](docs/nebius/devpost-draft.md). Set `SHOPPER_PROVIDER=nebius` and `NEBIUS_API_KEY` to select it; the code default remains Claude when the provider is unset.
