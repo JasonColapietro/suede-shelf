@@ -47,7 +47,7 @@ npm run dev                  # http://localhost:3000
 |---|---|
 | `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET` | Creating and capturing orders. Get them from a **Sandbox** REST app in the [PayPal Developer Dashboard](https://developer.paypal.com/dashboard/applications). |
 | `SHOPPER_PROVIDER` | Set to `nebius` for the NVIDIA Nemotron shopper; otherwise the shopper uses Claude. |
-| `NEBIUS_API_KEY`, `NEBIUS_MODEL` | Token Factory API key and optional model override for the Nebius shopper. Default model: `nvidia/nemotron-3-super-120b-a12b`. |
+| `NEBIUS_API_KEY`, `NEBIUS_MODEL` | Token Factory API key and optional model override for the Nebius shopper. Default model: `nvidia/Nemotron-3_5-Lightning`. |
 | `ANTHROPIC_API_KEY` | Optional catalog extraction for pages without structured data, and the Claude shopper when selected. Not required by the Nebius shopper. |
 | `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Durable stores and orders on serverless hosts. Without them, data lives in memory. |
 | `PUBLIC_BASE_URL` | Optional fixed origin for PayPal return links. |
@@ -82,7 +82,7 @@ PayPal, Claude and Nebius are faked at the HTTP layer in tests, so the suite run
 ## Tools used
 
 - **PayPal:** Orders v2 REST API (create, get, capture) in Sandbox, with payee routing and idempotency keys.
-- **NVIDIA Nemotron** (`nvidia/nemotron-3-super-120b-a12b`): the selected public demo shopper, using runtime function-calling inference through Nebius Token Factory. The app is hosted on Vercel, not Nebius AI Cloud.
+- **NVIDIA Nemotron** (`nvidia/Nemotron-3_5-Lightning`): the selected public demo shopper, using runtime function-calling inference through Nebius Token Factory. The app is hosted on Vercel, not Nebius AI Cloud.
 - **Claude** (`claude-opus-5-5` via `@anthropic-ai/sdk`): optional unstructured catalog extraction and the alternate shopper using the SDK tool runner with `mcpTools`. Server-side refusal fallbacks apply to the Claude shopper.
 - **Model Context Protocol** TypeScript SDK: the per-store storefront server, served statelessly over Streamable HTTP.
 - **Next.js 16** on Vercel, **Upstash Redis** for storage.
