@@ -6,7 +6,7 @@ import { createStorefrontServer } from "./storefront-mcp";
 import type { ShopDeps } from "./shop";
 import type { Store } from "./types";
 
-export const NEBIUS_MODEL = "nvidia/nemotron-3-super-120b-a12b";
+export const NEBIUS_MODEL = "nvidia/Nemotron-3_5-Lightning";
 export const NEBIUS_URL = "https://api.tokenfactory.nebius.com/v1/chat/completions";
 const Completion = z.object({ choices: z.array(z.object({
   finish_reason: z.string(),
