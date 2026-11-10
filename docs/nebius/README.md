@@ -8,7 +8,7 @@ Use the normal README setup, then set these server-side environment variables:
 
 - `SHOPPER_PROVIDER=nebius`
 - `NEBIUS_API_KEY`: a Token Factory API key; never use a NEXT_PUBLIC variable.
-- `NEBIUS_MODEL=nvidia/nemotron-3-super-120b-a12b` (or another available NVIDIA Nemotron model ID).
+- `NEBIUS_MODEL=nvidia/Nemotron-3_5-Lightning` (or another available NVIDIA Nemotron model ID).
 
 The endpoint is fixed to `https://api.tokenfactory.nebius.com/v1/chat/completions`. Inference consumes your Nebius credits. Choose an available NVIDIA model in your account before deployment. This integration does not create a paid subscription or dedicated GPU endpoint.
 
@@ -30,11 +30,11 @@ Offline tests exercise real MCP dispatch with a simulated Nebius HTTP provider. 
 
 Live acceptance: open a catalog, ask for products under a budget, request one specific in-stock variant, verify the sandbox approval link and total, and verify the order stays unpaid until buyer approval. Record a short real walkthrough after live inference is configured.
 
-## Verified public demonstration
+## Historical verified public demonstration
 
 Open https://suede-shelf.vercel.app/s/suede-demo-catalog-2f78dff6. Ask for in-stock gifts under $20, then request two Pocket Notebooks and one Canvas Pouch. The catalog total is $43.00 USD. The goods are fictional sandbox data; no items are sold or shipped. Customer approval remains required.
 
-See [live verification](live-verification.md) for the deployed source, actual inference evidence, unpaid order state and separate offline test results. The website is hosted on Vercel and calls Nebius Token Factory at runtime.
+The October 17 and 29 results used the former model; see [live verification](live-verification.md) for the deployed source, actual inference evidence, unpaid order state and separate offline test results. The website is hosted on Vercel and calls Nebius Token Factory at runtime.
 
 ## Sources
 
