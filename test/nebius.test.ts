@@ -85,13 +85,18 @@ test("checkout link survives a later provider failure without another order", as
   assert.doesNotMatch(JSON.stringify(logs), /private response|Buy two pothos|Bearer|fake/);
 });
 
-test("Nebius must read the current catalog before answering", async () => {
-  const fabricated = harness([{ finish_reason: "stop", message: { content: "Pothos is $99." } }]);
-  await assert.rejects(fabricated.run, /did not read the catalog/);
-  assert.deepEqual(fabricated.counts(), { created: 0, captured: 0 });
-  const grounded = harness([catalog, done]);
-  await grounded.run();
-  assert.deepEqual(grounded.requests[0].tool_choice, { type: "function", function: { name: "search_products" } });
-  assert.equal(grounded.requests[1].tool_choice, "auto");
-  assert.match(JSON.stringify(grounded.requests[1].messages), /12.00/);
+test("Nebius receives real MCP catalog data even when it answers without a tool call", async () => {
+  const h = harness([done]);
+  await h.run();
+  const messages = h.requests[0].messages;
+  const sourceCall = messages.at(-2).tool_calls[0];
+  assert.equal(sourceCall.function.name, "search_products");
+  assert.equal(sourceCall.function.arguments, "{}");
+  const result = messages.at(-1);
+  assert.equal(result.role, "tool");
+  assert.equal(result.tool_call_id, sourceCall.id);
+  const products = JSON.parse(result.content).structuredContent.products;
+  assert.ok(products.some((p: any) => p.id === "pothos" && p.price === "12.00"));
+  assert.equal(h.requests[0].tool_choice, "auto");
+  assert.deepEqual(h.counts(), { created: 0, captured: 0 });
 });

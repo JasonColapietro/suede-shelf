@@ -32,9 +32,16 @@ export async function runNebiusShopper(
     const { tools } = await client.listTools();
     const allowed = new Set(tools.map(t => t.name));
     const messages: Record<string, unknown>[] = [{ role: "system", content: shopperSystem(store) + " Use only product IDs, prices and availability from tool results; never guess them." }, ...history];
+    // Read the catalog ourselves so a conversational answer cannot skip its
+    // source data or use an over-specific model-generated search query.
+    const catalog = await client.callTool({ name: "search_products", arguments: {} });
+    if (catalog.isError) throw new Error("Could not read the catalog before answering.");
+    const catalogCallId = `catalog-${crypto.randomUUID()}`;
+    messages.push({ role: "assistant", content: null, tool_calls: [{
+      id: catalogCallId, type: "function", function: { name: "search_products", arguments: "{}" },
+    }] }, { role: "tool", tool_call_id: catalogCallId, content: JSON.stringify(catalog) });
     const seen = new Set<string>();
     let checkoutAttempted = false;
-    let catalogRead = false;
     for (let turn = 0; turn < 8; turn++) {
       signal.throwIfAborted();
       const response = await (config.fetch ?? fetch)(NEBIUS_URL, {
@@ -42,9 +49,7 @@ export async function runNebiusShopper(
         headers: { Authorization: `Bearer ${config.apiKey}`, "Content-Type": "application/json" },
         body: JSON.stringify({ model, messages, max_tokens: 4000,
           tools: tools.map(t => ({ type: "function", function: { name: t.name, description: t.description, parameters: t.inputSchema } })),
-          // Ground every reply in the current catalog, even when the model
-          // would otherwise answer from memory without calling a tool.
-          tool_choice: catalogRead ? "auto" : { type: "function", function: { name: "search_products" } }, parallel_tool_calls: false,
+          tool_choice: "auto", parallel_tool_calls: false,
         }),
       });
       // Provider bodies can contain request data. Keep them out of logs/errors.
@@ -58,10 +63,7 @@ export async function runNebiusShopper(
       });
       if (!["stop", "tool_calls"].includes(choice.finish_reason)) throw new Error("Nebius did not finish its response.");
       const message = choice.message;
-      if (!message.tool_calls?.length) {
-        if (!catalogRead) throw new Error("Nebius did not read the catalog before answering.");
-        return { text: message.content?.trim() || "Please ask about a product in this store.", ...checkout };
-      }
+      if (!message.tool_calls?.length) return { text: message.content?.trim() || "Please ask about a product in this store.", ...checkout };
       messages.push({ role: "assistant", ...message });
       for (const call of message.tool_calls) {
         let result: unknown;
@@ -75,7 +77,6 @@ export async function runNebiusShopper(
             checkoutAttempted = true;
           }
           const response = await client.callTool({ name: call.function.name, arguments: args });
-          if (call.function.name === "search_products" && !response.isError) catalogRead = true;
           result = response;
           const data = response.structuredContent as { approval_url?: string; order_id?: string } | undefined;
           if (call.function.name === "create_checkout" && !response.isError && data?.approval_url) {
