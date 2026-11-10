@@ -23,6 +23,7 @@ function harness(replies: unknown[], model?: string, returnedModel?: string) {
   return { requests, counts: () => ({ created, captured }), run: () => runNebiusShopper({ apiKey: "fake", model, fetch: fakeFetch }, store, { db: memoryDb(), paypal, baseUrl: "https://shelf.test" }, [{ role: "user", content: "Buy two pothos" }]) };
 }
 const tools = (...calls: unknown[]) => ({ finish_reason: "tool_calls", message: { content: null, tool_calls: calls } });
+const catalog = tools(call("catalog", "search_products", {}));
 const done = { finish_reason: "stop", message: { content: "Review your checkout on PayPal." } };
 test("Nemotron browses MCP and only creates one checkout despite repeated requests", async () => {
   const cart = { items: [{ product_id: "pothos", quantity: 2 }] };
@@ -38,7 +39,7 @@ test("Nemotron browses MCP and only creates one checkout despite repeated reques
   assert.equal(h.requests[0].parallel_tool_calls, false);
 });
 test("invalid arguments and unknown tools cannot create orders", async () => {
-  const h = harness([tools(call("a", "capture_payment", {}), call("b", "create_checkout", { items: [{ product_id: "pothos", quantity: 999 }] })), done]);
+  const h = harness([catalog, tools(call("a", "capture_payment", {}), call("b", "create_checkout", { items: [{ product_id: "pothos", quantity: 999 }] })), done]);
   await h.run();
   assert.deepEqual(h.counts(), { created: 0, captured: 0 });
 });
@@ -61,13 +62,13 @@ test("checkout link survives a later provider failure without another order", as
 });
 
  test("Nebius nullable tool_calls is a valid final answer", async () => {
-  const h = harness([{ finish_reason: "stop", message: { content: "Golden Pothos costs 12.00 USD.", tool_calls: null } }]);
+  const h = harness([catalog, { finish_reason: "stop", message: { content: "Golden Pothos costs 12.00 USD.", tool_calls: null } }]);
   assert.equal((await h.run()).text, "Golden Pothos costs 12.00 USD.");
   assert.equal(h.counts().created, 0);
 });
 
  test("explicit Nemotron model override is sent unchanged", async () => {
-  const h = harness([done], "nvidia/Nemotron-3-Ultra-550b-a55b");
+  const h = harness([catalog, done], "nvidia/Nemotron-3-Ultra-550b-a55b");
   await h.run();
   assert.equal(h.requests[0].model, "nvidia/Nemotron-3-Ultra-550b-a55b");
 });
@@ -75,11 +76,22 @@ test("checkout link survives a later provider failure without another order", as
  test("completion diagnostics retain provider model without private response data", async t => {
   const logs: unknown[][] = [];
   t.mock.method(console, "info", (...args: unknown[]) => { logs.push(args); });
-  const h = harness([{ finish_reason: "stop", message: { content: "private response" } }], undefined, "nvidia/Nemotron-3_5-Lightning");
+  const h = harness([catalog, { finish_reason: "stop", message: { content: "private response" } }], undefined, "nvidia/Nemotron-3_5-Lightning");
   await h.run();
-  assert.deepEqual(logs, [["nebius completion", {
+  assert.deepEqual(logs.at(-1), ["nebius completion", {
     requestedModel: "nvidia/Nemotron-3_5-Lightning", returnedModel: "nvidia/Nemotron-3_5-Lightning",
     finishReason: "stop", tools: [],
-  }]]);
+  }]);
   assert.doesNotMatch(JSON.stringify(logs), /private response|Buy two pothos|Bearer|fake/);
+});
+
+test("Nebius must read the current catalog before answering", async () => {
+  const fabricated = harness([{ finish_reason: "stop", message: { content: "Pothos is $99." } }]);
+  await assert.rejects(fabricated.run, /did not read the catalog/);
+  assert.deepEqual(fabricated.counts(), { created: 0, captured: 0 });
+  const grounded = harness([catalog, done]);
+  await grounded.run();
+  assert.deepEqual(grounded.requests[0].tool_choice, { type: "function", function: { name: "search_products" } });
+  assert.equal(grounded.requests[1].tool_choice, "auto");
+  assert.match(JSON.stringify(grounded.requests[1].messages), /12.00/);
 });
