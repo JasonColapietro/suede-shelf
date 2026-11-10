@@ -6,7 +6,7 @@ import { store } from "./fixtures";
 import type { PayPalClient } from "../lib/paypal";
 
 const call = (id: string, name: string, args: unknown) => ({ id, type: "function", function: { name, arguments: JSON.stringify(args) } });
-function harness(replies: unknown[], model?: string) {
+function harness(replies: unknown[], model?: string, returnedModel?: string) {
   const requests: any[] = [];
   let created = 0, captured = 0;
   const paypal: PayPalClient = {
@@ -18,7 +18,7 @@ function harness(replies: unknown[], model?: string) {
     assert.equal(url, NEBIUS_URL);
     requests.push(JSON.parse(String(init.body)));
     assert.ok(replies.length, "Unexpected provider call");
-    return Response.json({ choices: [replies.shift()] });
+    return Response.json({ model: returnedModel, choices: [replies.shift()] });
   }) as typeof fetch;
   return { requests, counts: () => ({ created, captured }), run: () => runNebiusShopper({ apiKey: "fake", model, fetch: fakeFetch }, store, { db: memoryDb(), paypal, baseUrl: "https://shelf.test" }, [{ role: "user", content: "Buy two pothos" }]) };
 }
@@ -70,4 +70,16 @@ test("checkout link survives a later provider failure without another order", as
   const h = harness([done], "nvidia/Nemotron-3-Ultra-550b-a55b");
   await h.run();
   assert.equal(h.requests[0].model, "nvidia/Nemotron-3-Ultra-550b-a55b");
+});
+
+ test("completion diagnostics retain provider model without private response data", async t => {
+  const logs: unknown[][] = [];
+  t.mock.method(console, "info", (...args: unknown[]) => { logs.push(args); });
+  const h = harness([{ finish_reason: "stop", message: { content: "private response" } }], undefined, "nvidia/Nemotron-3_5-Lightning");
+  await h.run();
+  assert.deepEqual(logs, [["nebius completion", {
+    requestedModel: "nvidia/Nemotron-3_5-Lightning", returnedModel: "nvidia/Nemotron-3_5-Lightning",
+    finishReason: "stop", tools: [],
+  }]]);
+  assert.doesNotMatch(JSON.stringify(logs), /private response|Buy two pothos|Bearer|fake/);
 });

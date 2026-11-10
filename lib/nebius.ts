@@ -8,7 +8,7 @@ import type { Store } from "./types";
 
 export const NEBIUS_MODEL = "nvidia/Nemotron-3_5-Lightning";
 export const NEBIUS_URL = "https://api.tokenfactory.nebius.com/v1/chat/completions";
-const Completion = z.object({ choices: z.array(z.object({
+const Completion = z.object({ model: z.string().max(200).optional(), choices: z.array(z.object({
   finish_reason: z.string(),
   message: z.object({ content: z.string().nullable().optional(), tool_calls: z.array(z.object({
     id: z.string().min(1), type: z.literal("function"),
@@ -46,7 +46,13 @@ export async function runNebiusShopper(
       });
       // Provider bodies can contain request data. Keep them out of logs/errors.
       if (!response.ok) throw new Error(`Nebius request failed (${response.status}).`);
-      const choice = Completion.parse(await response.json()).choices[0];
+      const completion = Completion.parse(await response.json());
+      const choice = completion.choices[0];
+      console.info("nebius completion", {
+        requestedModel: model, returnedModel: completion.model ?? null,
+        finishReason: choice.finish_reason,
+        tools: (choice.message.tool_calls ?? []).map(call => call.function.name).filter(name => allowed.has(name)),
+      });
       if (!["stop", "tool_calls"].includes(choice.finish_reason)) throw new Error("Nebius did not finish its response.");
       const message = choice.message;
       if (!message.tool_calls?.length) return { text: message.content?.trim() || "Please ask about a product in this store.", ...checkout };
