@@ -31,7 +31,15 @@ export async function runNebiusShopper(
     await Promise.all([server.connect(a), client.connect(b)]);
     const { tools } = await client.listTools();
     const allowed = new Set(tools.map(t => t.name));
-    const messages: Record<string, unknown>[] = [{ role: "system", content: shopperSystem(store) }, ...history];
+    const messages: Record<string, unknown>[] = [{ role: "system", content: shopperSystem(store) + " Use only product IDs, prices and availability from tool results; never guess them." }, ...history];
+    // Read the catalog ourselves so a conversational answer cannot skip its
+    // source data or use an over-specific model-generated search query.
+    const catalog = await client.callTool({ name: "search_products", arguments: {} });
+    if (catalog.isError) throw new Error("Could not read the catalog before answering.");
+    const catalogCallId = `catalog-${crypto.randomUUID()}`;
+    messages.push({ role: "assistant", content: null, tool_calls: [{
+      id: catalogCallId, type: "function", function: { name: "search_products", arguments: "{}" },
+    }] }, { role: "tool", tool_call_id: catalogCallId, content: JSON.stringify(catalog) });
     const seen = new Set<string>();
     let checkoutAttempted = false;
     for (let turn = 0; turn < 8; turn++) {
