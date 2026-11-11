@@ -14,10 +14,61 @@ export const metadata: Metadata = {
     "Suede Shelf reads your product pages and publishes a storefront that ChatGPT, Claude and any MCP assistant can shop. Customers approve and pay on PayPal; money lands in your PayPal account.",
 };
 
+const publisherSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://suedeai.ai/#organization",
+      "name": "Suede AI",
+      "url": "https://suedeai.ai",
+      "alternateName": [
+        "Suede Labs AI",
+        "Suede Labs",
+        "Suede"
+      ],
+      "parentOrganization": {
+        "@type": "Organization",
+        "@id": "https://jcinvestmentgroup.ventures/#organization",
+        "name": "JC Investment Group LLC",
+        "url": "https://jcinvestmentgroup.ventures/"
+      },
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "138 Victorian Lane",
+        "addressLocality": "Jupiter",
+        "addressRegion": "FL",
+        "postalCode": "33458",
+        "addressCountry": "US"
+      },
+      "hasMerchantReturnPolicy": {
+        "@type": "MerchantReturnPolicy",
+        "@id": "https://suedeai.ai/terms#money-back-policy",
+        "name": "90-day money-back policy",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+        "merchantReturnDays": 90,
+        "returnFees": "https://schema.org/FreeReturn",
+        "refundType": "https://schema.org/FullRefund",
+        "merchantReturnLink": "https://suedeai.ai/terms#money-back-policy"
+      }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://suede-shelf.vercel.app/#website",
+      "name": "Suede Shelf",
+      "url": "https://suede-shelf.vercel.app/",
+      "publisher": {
+        "@id": "https://suedeai.ai/#organization"
+      }
+    }
+  ]
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full`}>
       <body className="flex min-h-full flex-col bg-paper text-ink">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(publisherSchema).replace(/</g, "\\u003c") }} />
         <header className="border-b border-rule">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
             <Link href="/" className="flex items-center gap-2.5 font-medium">
